@@ -1,6 +1,8 @@
-from pydantic import BaseModel, Schema, validator
+from pydantic import Schema, validator
+from BSSAPI.api.models.base_model import Model
 
-class Notification(BaseModel):
+
+class Notification(Model):
     ClientName: str
     ClientAccount: str
     status: int

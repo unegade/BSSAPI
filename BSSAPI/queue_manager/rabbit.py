@@ -1,4 +1,3 @@
-import inspect
 import pika
 from BSSAPI.logger import logger
 
@@ -16,10 +15,6 @@ class Rabbit:
     def __repr__(self) -> str:
         return f'{self.parameters.host}:{self.parameters.port} - {self.credential.username}'
 
-
-    def get_channel(self):
-        a = self.channel
-        return self.channel
     def connect(self, queue):
         try:
             self.channel = self.connection.channel()
@@ -42,4 +37,5 @@ class Rabbit:
 
 # rb = Rabbit('10.111.122.51')
 # rb.connect('notify')
-# rb.send_message('notify','qweqweqw')
+# for i in range(500):
+#     rb.send_message('notify','qweqweqw')

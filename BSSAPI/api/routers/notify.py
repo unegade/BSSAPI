@@ -15,16 +15,12 @@ router = APIRouter()
              summary="Добавить данные",
              description="Функция добавляет данные", tags=['notify'])
 def read_root(data: Notification, request: Request):
-    # data = await request.json()
     logger.debug(f'REQUEST {request.client.host} {request.url.path}\n\theaders={request.headers}\n\tbody={jsonable_encoder(data)}')
+    try:
     # rabbit_sender.connect(RABBIT_QUEUE_NOTIFY)
-    # js = request.json()
-    # bd = request.body()
     # rabbit_sender.send_message('notify','test')
     # a = rabbit_sender.get_channel()
     # rabbit_sender.send_message(RABBIT_QUEUE_NOTIFY, jsonable_encoder(data))
-    rabbit_sender.get_channel()
-    try:
         response = JSONResponse(status_code=200, content='success')
     except Exception as ex:
         print(ex)

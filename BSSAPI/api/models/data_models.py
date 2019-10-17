@@ -6,7 +6,7 @@ class Notification(Model):
     ClientName: str
     ClientAccount: str
     status: int
-    ID: str = Schema(None, title='ID documentation',  max_length=300,const=True)
+    ID: str = Schema(None, title='ID documentation',  max_length=300)
     Number: str
     ModifiedBy: int
     extendedMap: dict

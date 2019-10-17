@@ -29,8 +29,11 @@ class Rabbit:
 
 
     async def _send_message(self, queue, body: str):
+        logger.debug(f'Sending message {body}')
         message = aio_pika.Message(body=body.encode())
         await self.channel.default_exchange.publish(message, routing_key=queue)
+        logger.debug('Message sended')
 
     def send_message(self, queue, body):
-        self.loop.run_until_complete(self._send_message(queue, body))
+        asyncio.ensure_future(self._send_message(queue, body), loop=self.loop)
+        # self.loop.run_until_complete(self._send_message(queue, body))

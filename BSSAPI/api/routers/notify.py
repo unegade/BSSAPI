@@ -15,12 +15,12 @@ logger = get_logger(__name__)
 @router.post("/notify",
              summary="Добавить данные",
              description="Функция добавляет данные", tags=['notify'])
-def read_root(data: Notification, request: Request):
+async def read_root(data: Notification, request: Request):
     logger.debug(f'RQ {request.client.host} {request.url.path}\n\theaders={request.headers}\n\tbody={jsonable_encoder(data)}')
     body = json.dumps(jsonable_encoder(data), ensure_ascii=False)
 
     try:
-        rabbit.send_message(RABBIT_QUEUE_NOTIFY, body)
+        # await rabbit._send_message(RABBIT_QUEUE_NOTIFY, body)
         response = JSONResponse(status_code=200, content='success')
     except Exception as ex:
         logger.error(ex)

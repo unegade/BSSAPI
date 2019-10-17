@@ -1,20 +1,14 @@
-from BSSAPI.app import app
-from fastapi.exceptions import RequestValidationError
 from starlette.responses import PlainTextResponse
 from starlette.requests import Request
-from starlette.responses import Response
-from BSSAPI.logger import logger
+from BSSAPI.logger import get_logger
 
-
-
-@app.exception_handler(RequestValidationError)
+logger = get_logger(__name__)
 def validation_exception_handler(request: Request, exc):
-    logger.error(f'{request.client.host} {request.url} {str(exc)}')
+    logger.error(f'{request.client.host} {request.url} 500 {str(exc)}')
     return PlainTextResponse(str(exc), status_code=500)
 
-# @app.middleware("http")
-# async def add_process_time_header(request: Request, call_next):
-#     logger.debug(f'{request.client.host}')
-#     response: Response = await call_next(request)
-#     logger.debug(f'{response.status_code}')
-#     return response
+
+def http_exception_handler(request: Request, exc):
+    logger.error(f'{request.client.host} {request.url} {exc.status_code} {str(exc.detail)}')
+    return PlainTextResponse(str(exc.detail), status_code=500)
+

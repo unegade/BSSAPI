@@ -43,7 +43,7 @@ class Rabbit:
         if not uuid:
             operation_id = uuid.uuid4()
         logger.debug(f'{operation_id} Sending message to RabbitMQ')
-        message = aio_pika.Message(body=body.encode())
+        message = aio_pika.Message(body=str(body).encode(), correlation_id=str(operation_id))
         try:
             await self.channel.default_exchange.publish(message, routing_key=queue)
             logger.debug(f'{operation_id} Message sent success')
@@ -51,5 +51,5 @@ class Rabbit:
             logger.error(f'{operation_id} Error sending message')
             raise
 
-    def send_message(self, queue, body):
-        asyncio.ensure_future(self.send_message_async(queue, body), loop=self.loop)
+    def send_message(self, queue, body, operation_id: uuid = None):
+        self.loop.run_until_complete(self.send_message_async(queue, body, operation_id))

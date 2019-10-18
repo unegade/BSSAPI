@@ -1,30 +1,34 @@
 from fastapi import APIRouter
+from fastapi.encoders import jsonable_encoder
 from starlette.responses import JSONResponse
 from starlette.requests import Request
-from fastapi.encoders import jsonable_encoder
 from BSSAPI.api.models.data_models import Notification
 from BSSAPI.logger import get_logger
 from BSSAPI.app import rabbit
 from BSSAPI.settings import RABBIT_QUEUE_NOTIFY
 import json
-from fastapi import HTTPException
+import uuid
 
 router = APIRouter()
-logger = get_logger(__name__)
+logger = get_logger('NOTIFY_ROUTER')
+
 
 @router.post("/notify",
              summary="Добавить данные",
-             description="Функция добавляет данные", tags=['notify'])
-async def read_root(data: Notification, request: Request):
-    logger.debug(f'RQ {request.client.host} {request.url.path}\n\theaders={request.headers}\n\tbody={jsonable_encoder(data)}')
+             description="Функция отправляет данные в RabbitMQ",
+             # response_model=JSONResponse,
+             # responses={200, 500},
+             tags=['notify'])
+async def read_root(data: Notification, request: Request) -> JSONResponse:
+    operation_id = uuid.uuid4()
     body = json.dumps(jsonable_encoder(data), ensure_ascii=False)
-
-    try:
-        # await rabbit._send_message(RABBIT_QUEUE_NOTIFY, body)
-        response = JSONResponse(status_code=200, content='success')
-    except Exception as ex:
-        logger.error(ex)
-        raise HTTPException(status_code=500, detail="Ошибка на стороне сервера.")
     logger.debug(
-        f'RS {request.client.host} {request.url.path} {response.status_code}\n\theaders={response.headers}\n\tbody={response.body.decode("utf-8")}')
-    return JSONResponse(status_code=200, content='success')
+        f'{operation_id} RQ {request.client.host} {request.url.path}\n\theaders={request.headers}\n\tbody={body}')
+    try:
+        await rabbit.send_message_async(RABBIT_QUEUE_NOTIFY, body, operation_id)
+        response = JSONResponse(status_code=200, content={'message': 'success'})
+    except Exception as ex:
+        response = JSONResponse(status_code=500, content={'message': 'Ошибка на стороне сервера.'})
+    logger.debug(
+        f'{operation_id} RS {request.client.host} {request.url.path} {response.status_code}\n\theaders={response.headers}\n\tbody={response.body.decode("utf-8")}')
+    return response

@@ -1,7 +1,5 @@
-from BSSAPI import settings
 import logging
 import sys
-
 
 def get_logger(module_name: str) -> logging.Logger:
     """
@@ -17,5 +15,6 @@ def get_logger(module_name: str) -> logging.Logger:
     # file_handler = logging.FileHandler(filename='debug.log')
     # file_handler.setFormatter(formatter)
     # logger.addHandler(file_handler)
-    logger.setLevel(settings.LOGGER_LEVEL)
+    # logger.setLevel(settings.LOGGER_LEVEL)
     return logger
+

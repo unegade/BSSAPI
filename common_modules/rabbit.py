@@ -1,4 +1,4 @@
-from BSSAPI.logger import get_logger
+from common_modules.logger import get_logger
 import asyncio
 import aio_pika
 import uuid
@@ -10,12 +10,14 @@ class Rabbit:
     """
     Класс подключения к RabbitMQ
     """
-    def __init__(self, url):
+    def __init__(self, url, connection_name):
         """
         Для инициализации класса нужен url подключения
         :param url: 'amqp://guest:guest@10.111.122.51:5672'
         """
         self.url = url
+        self.connection_name = connection_name
+        # self.rpc = None
         self.loop = asyncio.get_event_loop()
         self.loop.run_until_complete(self._init())
 
@@ -25,12 +27,23 @@ class Rabbit:
         :return:
         """
         try:
-            self.connection = await aio_pika.connect_robust(self.url, loop=self.loop)
+            self.connection = await aio_pika.connect_robust(self.url,
+                                                            client_properties={'connection_name': self.connection_name},
+                                                            loop=self.loop)
             self.channel = await self.connection.channel(publisher_confirms=False)
+            await self.channel.set_qos(prefetch_count=5000)
             self.channel.transaction()
         except Exception as ex:
             logger.error(ex)
+            raise
         return self
+
+    def declare_queue(self, queue_name:str):
+        self.loop.run_until_complete(self._declare_queue(queue_name))
+
+    async def _declare_queue(self, queue_name:str):
+        self.queue = await self.channel.declare_queue(
+            queue_name, durable=True)
 
     async def send_message_async(self, queue: str, body: str, operation_id: uuid = None) -> bool:
         """
@@ -53,3 +66,15 @@ class Rabbit:
 
     def send_message(self, queue, body, operation_id: uuid = None):
         self.loop.run_until_complete(self.send_message_async(queue, body, operation_id))
+
+    def run_listen(self):
+        self.loop.run_forever()
+
+    def add_lister_handler(self, queue: str, handler, **kwargs):
+        self.declare_queue(queue)
+        self.loop.run_until_complete(self._add_lister_handler(queue, handler, **kwargs))
+
+    async def _add_lister_handler(self, queue, handler, **kwargs):
+        # await self.rpc.register(queue, handler, **kwargs)
+        # await self.master.create_worker(queue, handler, **kwargs)
+        await self.queue.consume(handler)

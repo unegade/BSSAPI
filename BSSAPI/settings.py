@@ -1,6 +1,6 @@
 from logging import DEBUG, INFO, ERROR, WARNING
 
-LOGGER_LEVEL = DEBUG
+LOGGER_LEVEL = INFO
 # Настройки Web сервиса
 FASTAPI_TITLE: str = 'Микросервис API для нотификаций из BSS'
 FASTAPI_VERSION: str = '1.0'

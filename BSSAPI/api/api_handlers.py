@@ -1,6 +1,6 @@
 from starlette.responses import PlainTextResponse
 from starlette.requests import Request
-from BSSAPI.logger import get_logger
+from common_modules.logger import get_logger
 
 
 

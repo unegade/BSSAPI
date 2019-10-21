@@ -3,7 +3,7 @@ from fastapi.encoders import jsonable_encoder
 from starlette.responses import JSONResponse
 from starlette.requests import Request
 from BSSAPI.api.models.data_models import Notification
-from BSSAPI.logger import get_logger
+from common_modules.logger import get_logger
 from BSSAPI.app import rabbit
 from BSSAPI.settings import RABBIT_QUEUE_NOTIFY
 import json

@@ -27,4 +27,5 @@ def api_init():
 if __name__ == "__main__":
     logging.basicConfig(level=LOGGER_LEVEL)
     api_init()
+    rabbit.loop_forever()
     uvicorn.run(app, host=FASTAPI_HOST, port=FASTAPI_PORT, debug=FASTAPI_DEBUG, log_level="info", reload=True)

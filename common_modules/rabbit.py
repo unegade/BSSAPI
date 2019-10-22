@@ -1,12 +1,14 @@
 from common_modules.logger import get_logger
+from common_modules.singleton import Singleton
 import asyncio
 import aio_pika
 import uuid
+import threading
 
 logger = get_logger('RABBITMQ')
 
 
-class Rabbit:
+class Rabbit(metaclass=Singleton):
     """
     Класс подключения к RabbitMQ
     """
@@ -17,9 +19,12 @@ class Rabbit:
         """
         self.url = url
         self.connection_name = connection_name
-        # self.rpc = None
         self.loop = asyncio.get_event_loop()
         self.loop.run_until_complete(self._init())
+
+    def loop_forever(self):
+        t = threading.Thread(target=self.loop.run_forever)
+        t.start()
 
     async def _init(self):
         """
@@ -38,14 +43,14 @@ class Rabbit:
             raise
         return self
 
-    def declare_queue(self, queue_name:str):
+    def declare_queue(self, queue_name: str):
         self.loop.run_until_complete(self._declare_queue(queue_name))
 
-    async def _declare_queue(self, queue_name:str):
+    async def _declare_queue(self, queue_name: str):
         self.queue = await self.channel.declare_queue(
             queue_name, durable=True)
 
-    async def send_message_async(self, queue: str, body: str, operation_id: uuid = None) -> bool:
+    async def send_message_async(self, queue: str, body: str, operation_id: uuid = None):
         """
         Асинхронная отправка сообщений
         :param queue: Очередь
@@ -61,11 +66,11 @@ class Rabbit:
             await self.channel.default_exchange.publish(message, routing_key=queue)
             logger.debug(f'{operation_id} Message sent success')
         except Exception as ex:
-            logger.error(f'{operation_id} Error sending message')
+            logger.error(f'{operation_id} Error sending message\n\t{ex}')
             raise
 
     def send_message(self, queue, body, operation_id: uuid = None):
-        self.loop.run_until_complete(self.send_message_async(queue, body, operation_id))
+        self.loop.create_task(self.send_message_async(queue, body, operation_id))
 
     def run_listen(self):
         self.loop.run_forever()

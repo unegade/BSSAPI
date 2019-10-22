@@ -16,8 +16,6 @@ logger = get_logger('NOTIFY_ROUTER')
 @router.post("/notify",
              summary="Добавить данные",
              description="Функция отправляет данные в RabbitMQ",
-             # response_model=JSONResponse,
-             # responses={200, 500},
              tags=['notify'])
 async def read_root(data: Notification, request: Request) -> JSONResponse:
     operation_id = uuid.uuid4()
@@ -28,6 +26,7 @@ async def read_root(data: Notification, request: Request) -> JSONResponse:
         await rabbit.send_message_async(RABBIT_QUEUE_NOTIFY, body, operation_id)
         response = JSONResponse(status_code=200, content={'message': 'success'})
     except Exception as ex:
+        logger.error(ex)
         response = JSONResponse(status_code=500, content={'message': 'Ошибка на стороне сервера.'})
     logger.debug(
         f'{operation_id} RS {request.client.host} {request.url.path} {response.status_code}\n\theaders={response.headers}\n\tbody={response.body.decode("utf-8")}')

@@ -15,11 +15,6 @@ def get_logger(module_name: str) -> logging.Logger:
     std_handler = logging.StreamHandler(sys.stdout)
     std_handler.setFormatter(formatter)
     logger.addHandler(std_handler)
-    # file_handler = logging.FileHandler(filename='debug.log')
-    # file_handler.setFormatter(formatter)
-    # logger.addHandler(file_handler)
-    # logger.setLevel(settings.LOGGER_LEVEL)
-    # logger.setLevel()
     return logger
 
 

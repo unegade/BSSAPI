@@ -1,4 +1,4 @@
-from starlette.responses import PlainTextResponse
+from starlette.responses import PlainTextResponse, JSONResponse
 from starlette.requests import Request
 from common_modules.logger import get_logger
 
@@ -20,5 +20,4 @@ def http_exception_handler(request: Request, exc):
     Добавляет логирование.
     """
     logger.error(f'{request.client.host} {request.url} {exc.status_code} {str(exc.detail)}')
-    return PlainTextResponse(str(exc.detail), status_code=500)
-
+    return PlainTextResponse('Ошибка на стороне сервера', status_code=500)

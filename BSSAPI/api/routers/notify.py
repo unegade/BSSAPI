@@ -18,15 +18,10 @@ logger = get_logger('NOTIFY_ROUTER')
              description="Этот сценарий используется для случаев, когда нужно назначить задачу с одного исполнителя "
                          "на другого исполнителя",
              tags=['notifcationAssigneeUser'])
-async def notify(data: Notification, request: Request) -> JSONResponse:
+async def notify(data: Notification) -> JSONResponse:
     operation_id = uuid.uuid4()
     body = json.dumps(jsonable_encoder(data), ensure_ascii=False)
-    try:
-        await rabbit.send_message_async(Config.get('RABBIT', 'queue_notify'), body, operation_id)
-        response = JSONResponse(status_code=200, content={'message': 'success'})
-    except Exception as ex:
-        logger.error(ex)
-        response = JSONResponse(status_code=500, content={'message': 'Ошибка на стороне сервера.'})
-    return response
+    await rabbit.send_message_async(Config.get('RABBIT', 'queue_notify'), body, operation_id)
+    return JSONResponse(status_code=200, content={'message': 'success'})
 
 

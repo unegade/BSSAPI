@@ -28,7 +28,6 @@ def api_init():
     app.include_router(index.router)
     app.add_exception_handler(400, http_exception_handler)
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
-    app.add_exception_handler(RabbitSendException, validation_exception_handler)
 
 
 def rabbit_init():

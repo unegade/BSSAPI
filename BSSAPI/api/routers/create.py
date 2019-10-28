@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
 from starlette.responses import JSONResponse
 from starlette.requests import Request
-from BSSAPI.api.models.data_models import Notification
+from BSSAPI.api.models.data_models import CreateUptade
 from common_modules.logger import get_logger
 from BSSAPI.app import rabbit
 from BSSAPI.settings import RABBIT_QUEUE_NOTIFY
@@ -13,12 +13,11 @@ router = APIRouter()
 logger = get_logger('NOTIFY_ROUTER')
 
 
-@router.post("/notifcationAssigneeUser",
-             summary="Нотификация с результатом назначения",
-             description="Этот сценарий используется для случаев, когда нужно назначить задачу с одного исполнителя "
-                         "на другого исполнителя",
-             tags=['notifcationAssigneeUser'])
-async def notify(data: Notification, request: Request) -> JSONResponse:
+@router.post("/create-task",
+             summary="Запрос на создание задачи",
+             description="",
+             tags=['task'])
+async def create(data: CreateUptade, request: Request) -> JSONResponse:
     operation_id = uuid.uuid4()
     body = json.dumps(jsonable_encoder(data), ensure_ascii=False)
     logger.debug(

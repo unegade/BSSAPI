@@ -4,11 +4,11 @@ from starlette.responses import HTMLResponse, RedirectResponse
 router = APIRouter()
 
 
-@router.get("/", tags=['general'])
+@router.get("/", tags=['/'])
 async def read_users():
     html_body = """
-    <a href='localhost:8000/docs'>Doc</a><br/>
-    <a href='localhost:8000/redoc'>ReDoc</a>
+    <a href='/docs'>Doc</a><br/>
+    <a href='/redoc'>ReDoc</a>
     """
-    # return HTMLResponse(html_body)
-    return RedirectResponse(url='/redoc')
+    return HTMLResponse(html_body)
+    # return RedirectResponse(url='/redoc')

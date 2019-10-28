@@ -5,7 +5,7 @@ router = APIRouter()
 
 
 @router.get("/", tags=['/'])
-async def read_users():
+async def index():
     html_body = """
     <a href='/docs'>Doc</a><br/>
     <a href='/redoc'>ReDoc</a>

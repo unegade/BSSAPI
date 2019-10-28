@@ -11,4 +11,6 @@ FASTAPI_DEBUG: bool = True if LOGGER_LEVEL == DEBUG else False
 # Настройки подключения к RabbitMQ
 RABBIT_URL: str = 'amqp://guest:guest@10.111.122.51:5672'
 RABBIT_QUEUE_NOTIFY: str = 'notify'
+RABBIT_QUEUE_CREATE: str = 'create'
+RABBIT_QUEUE_UPDATE: str = 'update'
 

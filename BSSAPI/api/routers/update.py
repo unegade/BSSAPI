@@ -5,7 +5,7 @@ from starlette.requests import Request
 from BSSAPI.api.models.data_models import CreateUptade
 from common_modules.logger import get_logger
 from BSSAPI.app import rabbit
-from BSSAPI.settings import RABBIT_QUEUE_NOTIFY
+from BSSAPI.settings import RABBIT_QUEUE_UPDATE
 import json
 import uuid
 
@@ -23,7 +23,7 @@ async def update(data: CreateUptade, request: Request) -> JSONResponse:
     logger.debug(
         f'{operation_id} RQ {request.client.host} {request.url.path}\n\theaders={request.headers}\n\tbody={body}')
     try:
-        await rabbit.send_message_async(RABBIT_QUEUE_NOTIFY, body, operation_id)
+        await rabbit.send_message_async(RABBIT_QUEUE_UPDATE, body, operation_id)
         response = JSONResponse(status_code=200, content={'message': 'success'})
     except Exception as ex:
         logger.error(ex)

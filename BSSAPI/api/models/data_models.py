@@ -11,20 +11,20 @@ class CreateUptade(BaseModel):
     clientName: str
     modifiedUser: str
     typeTask: str = None
-    ticketType: str
-    currentUser: str
-    priority: str
+    ticketType: str = None
+    currentUser: str = None
+    priority: str = None
     category: str
     typeProblem: str
-    modifiedWhen: str
+    modifiedWhen: str = None
     expectedResolutionDate: str = None
     parentId: str = None
     productCategory: List[str] = []
-    city: str
+    city: str = None
     clientСategory: str = None
     segment: str = None
     commercialBrand: str = None
-    clientBrand: str = None
+    marketingBrand: List[str] = []
 
 
 class Notification(BaseModel):

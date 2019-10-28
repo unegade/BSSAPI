@@ -9,7 +9,7 @@ import uvicorn
 
 # Объявление глобальных переменных
 app = FastAPI(title=FASTAPI_TITLE, version=FASTAPI_VERSION, description=FASTAPI_DESCRIPTION)
-rabbit = Rabbit(RABBIT_URL, 'Notify')
+rabbit = Rabbit(RABBIT_URL, 'BSSAPI')
 
 from BSSAPI.api.routers import general, notify, create, update
 
@@ -25,9 +25,14 @@ def api_init():
     app.add_exception_handler(400, http_exception_handler)
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
 
+def rabbit_init():
+    rabbit.declare_queue(RABBIT_QUEUE_NOTIFY)
+    rabbit.declare_queue(RABBIT_QUEUE_CREATE)
+    rabbit.declare_queue(RABBIT_QUEUE_UPDATE)
 
 if __name__ == "__main__":
     logging.basicConfig(level=LOGGER_LEVEL)
     api_init()
+    rabbit_init()
     rabbit.loop_forever()
     uvicorn.run(app, host=FASTAPI_HOST, port=FASTAPI_PORT, debug=FASTAPI_DEBUG, log_level="info", reload=True)

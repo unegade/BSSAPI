@@ -22,6 +22,7 @@ class Rabbit(metaclass=Singleton):
         self.url = url
         self.connection_name = connection_name
         self.loop = asyncio.get_event_loop()
+        self.loop.run_until_complete(self._init())
 
 
     def loop_forever(self):
@@ -34,7 +35,6 @@ class Rabbit(metaclass=Singleton):
         :return:
         """
         try:
-            self.loop.run_until_complete(self._init())
             self.connection = await aio_pika.connect_robust(self.url,
                                                             client_properties={'connection_name': self.connection_name},
                                                             loop=self.loop)
@@ -86,6 +86,3 @@ class Rabbit(metaclass=Singleton):
         # await self.rpc.register(queue, handler, **kwargs)
         # await self.master.create_worker(queue, handler, **kwargs)
         await self.queue.consume(handler)
-
-    def declare_queues(self, queue: Union[str, list]):
-        pass

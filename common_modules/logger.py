@@ -36,4 +36,4 @@ def custom_uvicorn_middleware_logger(message):
 # Переопределение стандартной функции Uvicorn на свою
 ml.message_with_placeholders = custom_uvicorn_middleware_logger
 # Подлючение сторонних логеров к стандартому выводу
-override_library_loggers('uvicorn')
+override_library_loggers('uvicorn', 'aio_pika')

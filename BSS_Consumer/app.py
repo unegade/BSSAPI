@@ -1,13 +1,12 @@
-from BSS_Consumer.settings import *
 from BSS_Consumer.workers.default_process import process_message
+from common_modules.config import Config
 from common_modules.rabbit import Rabbit
 import logging
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=LOGGER_LEVEL)
-    rb = Rabbit(RABBIT_URL, 'Consumer')
-    rb.add_lister_handler(RABBIT_INPUT_QUEUE, process_message)
-    # for i in [i for i in range(10000)]:
-    #     rb.send_message('notify', i, i)
+    logging.basicConfig(level=logging.DEBUG if Config.get('DEFAULT', 'log_level') == 'debug' else logging.INFO)
+    rb = Rabbit(url=Config.get('RABBIT', 'url'),
+                connection_name=Config.get('DEFAULt', 'app_name'))
+    rb.add_lister_handler(Config.get('DEFAULT', 'input_queue'), process_message)
     rb.run_listen()
